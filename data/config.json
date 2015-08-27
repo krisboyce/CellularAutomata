@@ -1,0 +1,17 @@
+{
+  "settings": {
+    "offsetX": -108,
+    "paused": true,
+    "offsetY": 0,
+    "timeScale": 93.21142578125,
+    "loop": false,
+    "Zoom": 1,
+    "seedProb": 18.28571319580078,
+    "resolution": 36
+  },
+  "rules": {
+    "neighborBirth": 3,
+    "neighborMin": 2,
+    "neighborMax": 3
+  }
+}
