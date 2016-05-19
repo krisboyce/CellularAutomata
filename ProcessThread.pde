@@ -1,5 +1,5 @@
 
-ProcessThread process;
+
 long generation = 0;
 class Rules{
   boolean[] suff;
@@ -11,7 +11,7 @@ class Rules{
   
 }
 Rules rules = new Rules();
-class ProcessThread extends Thread {
+public class ProcessThread extends Thread {
   long delay = 0;
   boolean running = true;
   HashMap<Long, boolean[][]> steps = new HashMap<Long, boolean[][]>();
@@ -98,15 +98,15 @@ class ProcessThread extends Thread {
   }
 
   public void stepBack() {
-    HashMap.Entry<Long, boolean[][]> minEntry = null;
+    Long minEntry = null;
 
-    for (HashMap.Entry<Long, boolean[][]> entry : steps.entrySet()) {
-      if (minEntry == null || entry.getKey() < minEntry.getKey()) {
+    for (Long entry : steps.keySet()) {
+      if (minEntry == null || entry < minEntry) {
         minEntry = entry;
       }
     }
     
-    if (generation > minEntry.getKey()) {
+    if (generation > minEntry) {
       if (steps.get(generation) != null) {
         grid = steps.get(generation-1);
       }
@@ -128,31 +128,31 @@ class ProcessThread extends Thread {
   }
 
   public long getMinStep() {
-    HashMap.Entry<Long, boolean[][]> minEntry = null;
+    Long minEntry = null;
 
-    for (HashMap.Entry<Long, boolean[][]> entry : steps.entrySet()) {
-      if (minEntry == null || entry.getKey() < minEntry.getKey()) {
+    for (Long entry : steps.keySet()) {
+      if (minEntry == null || entry < minEntry) {
         minEntry = entry;
       }
     }
     if (minEntry != null) {
-      return minEntry.getKey()+1;
+      return minEntry+1;
     } else {
       return 0;
     }
   }
 
   public long getMaxStep() {
-    HashMap.Entry<Long, boolean[][]> maxEntry = null;
+    Long maxEntry = null;
 
-    for (HashMap.Entry<Long, boolean[][]> entry : steps.entrySet()) {
-      if (maxEntry == null || entry.getKey() > maxEntry.getKey()) {
+    for (Long entry : steps.keySet()) {
+      if (maxEntry == null || entry > maxEntry) {
         maxEntry = entry;
       }
     }
 
     if (maxEntry != null) {
-      return maxEntry.getKey()+1;
+      return maxEntry+1;
     } else {
       return 0;
     }

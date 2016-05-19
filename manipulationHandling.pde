@@ -13,8 +13,17 @@ int panFromY;
 
 void pan() {
   if (mouseButton == LEFT) {
-    xOffset += (mouseX - pmouseX)*scale;
-    yOffset += (mouseY - pmouseY)*scale;
+    xOffset = xOffset + (mouseX - pmouseX)*scale;
+    yOffset = yOffset + (mouseY - pmouseY)*scale;
+    if(xOffset > 0){
+      xOffset = 0;
+    }
+    if(yOffset > 0){
+      yOffset = 0;
+    }
+    if(xOffset < -gridWidth * scale){
+      xOffset = -gridWidth*2*scale+gridWidth*scale;
+    }
     println(xOffset + ", " + yOffset);
   }
 }
@@ -39,13 +48,12 @@ void placePattern() {
 }
 
 void placeCells() {
-
-  if (mouseX > 0 && mouseY > 0 && mouseX < gridWidth && mouseY < gridHeight) {
+  float mouseXTransformed = (mouseX +  scale * xOffset);
+  float mouseYTransformed = (mouseY +  scale * yOffset);
+  if (mouseXTransformed > 0 && mouseYTransformed > 0 && mouseXTransformed < gridWidth && mouseYTransformed < gridHeight) {
     int tileSize = int(gridWidth/gridDensity);
-    float scaledOffsetX = xOffset*scale;
-    float scaledOffsetY = yOffset*scale;
-    int mX = int((mouseX-scaledOffsetX)/scale)/tileSize;
-    int mY = int((mouseY-scaledOffsetY)/scale)/tileSize;
+    int mX = floor(mouseXTransformed/tileSize);
+    int mY = floor(mouseYTransformed/tileSize);
     if (mX >= 0 && mY >= 0) {
       if (mX < gridDensity && mY < gridDensity) {
         grid[mX][mY] = mouseButton == LEFT;

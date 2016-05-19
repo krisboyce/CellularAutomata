@@ -10,14 +10,13 @@ import javax.swing.*;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.*;
 import javax.swing.filechooser.FileFilter.*;
+
 import java.util.*;
-import java.util.Collections.*;
+import java.util.Map.*;
 
-
-
+ProcessThread process;
 void setup() {
   size(1024, 768);
-  pixelDensity(displayDensity());
   init = new InitThread();
   init.start();
   background(0);
@@ -31,6 +30,7 @@ void setup() {
   finally {
     renderer = new RenderThread(gridDensity <= 128 ? gridDensity*16 : gridDensity * 4, gridDensity <= 128 ? gridDensity*16 : gridDensity * 4);
     renderer.start();
+    print("Render Thread Running");
   }
 }
 void draw() {
@@ -68,9 +68,11 @@ void draw() {
         ui.getController("reseed").update();
       }
     }
+    
     if(scale < 1){
       scale = 1;
     }
+    
     if(scale > gridDensity/16){
       scale = gridDensity/16;
     }
@@ -78,9 +80,12 @@ void draw() {
     pushMatrix();
     
     translate(xOffset, yOffset);
-      
+    
     scale(scale);
+    try{
     image(renderer.view, 0, 0, gridWidth, gridHeight);
+    }catch(Exception e){
+    }
     popMatrix();
     fill(0);
     rect(gridWidth, 0, width, height);

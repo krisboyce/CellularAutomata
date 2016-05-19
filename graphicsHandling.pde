@@ -10,7 +10,7 @@ float yOffset = 0;
 RenderThread renderer;
 
 public class RenderThread extends Thread {
-  PGraphics view;
+  PGraphics view = new PGraphics();
   boolean rendering = true;
 
   RenderThread(int w, int h) {
@@ -41,11 +41,12 @@ public class RenderThread extends Thread {
     editor.view.beginDraw();
     editor.view.background(0);
     editor.view.stroke(0);
+    int cellSize = editor.view.width/editor.grid.length;
     for (int i = 0; i<editor.grid.length; i++) {
       for (int j = 0; j<editor.grid.length; j++) {
          if(editor.grid[i][j]){
            editor.view.fill(0, 255, 0);
-           editor.view.rect(i*(editor.view.width/editor.grid.length), j*(editor.view.width/editor.grid.length), (editor.view.width/editor.grid.length), (editor.view.width/editor.grid.length));
+           editor.view.rect(i*(cellSize), j*(cellSize), cellSize, cellSize);
          }
       }
     }
@@ -57,7 +58,7 @@ public class RenderThread extends Thread {
     this.view.background(0);
     
 
-    
+    int cellHeight = view.height/gridDensity, cellWidth = view.width/gridDensity;
     
     if(gridDensity <= 256){
       this.view.stroke(0);
@@ -68,7 +69,7 @@ public class RenderThread extends Thread {
     for (int i = 0; i<gridDensity; i++) {
       for (int j = 0; j<gridDensity; j++) {
         if (grid[i][j]) {
-          this.view.rect((i)*(view.width/gridDensity), j*(view.height/gridDensity), (view.width/(gridDensity)), (view.height/(gridDensity)));
+          this.view.rect(i*cellWidth, j*cellHeight, cellWidth, cellHeight);
         }
       }
     }
