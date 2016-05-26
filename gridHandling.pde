@@ -8,7 +8,7 @@ boolean paused = false;
 boolean loop = false;
 float seedProb = 25;
 volatile int gridDensity = 64;
-volatile boolean[][] grid = new boolean[gridDensity][gridDensity];
+volatile byte[][] grid = new byte[gridDensity][gridDensity];
 
 void initBoard() {
   File file = new File(dataPath("save.data"));
@@ -37,9 +37,9 @@ void seedBoard() {
   for (int i = 0; i<gridDensity; i++) {
     for (int j = 0; j<gridDensity; j++) {
       if (random(100) < seedProb) {
-        grid[i][j] = true;
+        grid[i][j] = (byte)random(1, 1);
       } else {
-        grid[i][j] = false;
+        grid[i][j] = 0;
       }
     }
   }
@@ -53,29 +53,27 @@ void resize(boolean increase) {
     return;
   }
   process.running = false;
-  renderer.rendering = false;
-  boolean[][] gridBuffer = grid;
+  byte[][] gridBuffer = grid;
   try {
     process.join();
-    renderer.join();
   }
   catch(Exception e) {
     e.printStackTrace();
   }
   process = new ProcessThread();
-  if (increase && gridDensity < 2048) {
-    gridDensity *=2;
-    grid = new boolean[gridDensity][gridDensity];
+  if (increase && gridDensity < 1024) {
+    gridDensity *= 2;
+    grid = new byte[gridDensity][gridDensity];
     for (int i = 0; i<gridBuffer.length; i++) {
       for (int j = 0; j<gridBuffer[0].length; j++) {
         grid[i][j] = gridBuffer[i][j];
       }
     }
   }
-  if (!increase && gridDensity > 16) {
+  if (!increase && gridDensity > 8) {
     process = new ProcessThread();
-    gridDensity /=2;
-    grid = new boolean[gridDensity][gridDensity];
+    gridDensity /= 2;
+    grid = new byte[gridDensity][gridDensity];
     for (int i = 0; i<gridDensity; i++) {
       for (int j = 0; j<gridDensity; j++) {
         grid[i][j] = gridBuffer[i][j];
@@ -85,9 +83,7 @@ void resize(boolean increase) {
   if(scale > 64){
     scale = 64;
   }
-  renderer = new RenderThread(gridDensity <= 128 ? gridDensity*16 : gridDensity * 8, gridDensity <= 128 ? gridDensity*16 : gridDensity * 8);
   configs.getJSONObject("settings").setInt("resolution", gridDensity);
-  renderer.start();
   process.start();
   pause.update();
   speed.update();

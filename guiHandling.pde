@@ -10,17 +10,18 @@ Group patternEditor;
 CheckBox suffRules, birthRules;
 
 void gui() {
+  int guiWidth = width-gridWidth;
   float tempTimeScale = timeScale;
   float tempSeedProb = seedProb;
 
   ui = new ControlP5(this);
   
   
-  Group board = ui.addGroup("board").setSize(width-gridWidth, 75).setPosition(gridWidth, 10)
+  Group board = ui.addGroup("board").setSize(guiWidth, 75).setPosition(gridWidth, 10)
     .setBackgroundColor(color(255, 128, 0, 10));
   ui.addBang("reseed").setPosition(10, 30).setSize(40, 40).setGroup(board);
   
-  ui.addSlider("seedProb").setPosition(10, 120).setSize(175, 40).setRange(0, 100).setLabel("Seed Amount").setGroup(board);
+  ui.addSlider("seedProb").setPosition(10, 120).setSize(guiWidth-100, 40).setRange(0, 100).setLabel("Seed Amount").setGroup(board);
   toggleLoop = ui.addToggle("loop").setPosition(60, 30).setSize(40, 40).setValue(loop).setGroup(board);
   ui.addLabel("resize").setPosition(155, 15).setText("GRID SCALE").setGroup(board);
   ui.addButton("increase").setPosition(190, 30).setSize(40, 40).setLabel("Increase").setGroup(board);
@@ -30,14 +31,14 @@ void gui() {
   Group time = ui.addGroup("time").setBackgroundColor(color(255, 128, 0, 10));
   pause = ui.addToggle("Pause").setPosition(10, 30).setSize(40, 40).setGroup(time);
   reverse = ui.addToggle("reverse").setPosition(70, 30).setSize(40, 40).setGroup(time);
-  speed = ui.addSlider("timeScale").setPosition(10, 120).setSize(175, 40).setRange(1, 100).setGroup(time);
+  speed = ui.addSlider("timeScale").setPosition(10, 120).setSize(guiWidth-100, 40).setRange(1, 100).setGroup(time);
   ui.addLabel("steps").setPosition(145, 15).setText("Generations: " + generation).setGroup(time);
   ui.addButton("Step").setLabel(">").setPosition(190, 30).setSize(25, 40).setGroup(time).setVisible(true);
   ui.addButton("StepBack").setLabel("<").setPosition(140, 30).setSize(25, 40).setGroup(time).setVisible(true);
   
   Group rules = ui.addGroup("rules").setBackgroundColor(color(255, 128, 0, 10));
   ui.addLabel("Suffocation Rules (0...8 neighbors)").setPosition(10, 25).setGroup(rules);
-  suffRules = ui.addCheckBox("suffRules").setPosition(10, 40).setItemsPerRow(9).setSize(15, 15).setSpacingColumn(5)
+  suffRules = ui.addCheckBox("suffRules").setPosition(10, 40).setItemsPerRow(9).setSize(45, 25).setSpacingColumn(30)
     .addItem("s0", 0)
     .addItem("s1", 1)
     .addItem("s2", 2)
@@ -50,8 +51,14 @@ void gui() {
     .hideLabels()
     .setGroup(rules);
   
+//  for(int i = 0; i<rules.suff.length; i++){
+//    if(rules.suff[i]){
+//      suffRules.activate(i);
+//    }
+//  }
+  
   ui.addLabel("Birth Rules (0...8 neighbors)").setPosition(10, 75).setGroup(rules);
-  birthRules = ui.addCheckBox("birthRules").setPosition(10, 90).setItemsPerRow(9).setSize(15, 15).setSpacingColumn(5)
+  birthRules = ui.addCheckBox("birthRules").setPosition(10, 90).setItemsPerRow(9).setSize(45, 25).setSpacingColumn(30)
     .addItem("b0", 0)
     .addItem("b1", 1)
     .addItem("b2", 2)
@@ -63,6 +70,12 @@ void gui() {
     .addItem("b8", 8)
     .hideLabels()
     .setGroup(rules);
+  
+//  for(int i = 0; i<rules.birth.length; i++){
+//    if(rules.birth[i]){
+//      birthRules.activate(i);
+//    }
+//  }
   
   Group options = ui.addGroup("options").setBackgroundColor(color(255, 128, 0, 10));
   ui.addButton("save")
@@ -132,7 +145,7 @@ void decrease() {
 void reseed() {
   generation = 0;
   ui.getController("steps").setStringValue("Generation: " + generation);
-  process.steps = new HashMap<Long, boolean[][]>();
+  process.steps = new HashMap<Long, byte[][]>();
   seedBoard();
   pause.update();
   speed.update();
@@ -158,7 +171,6 @@ void timeScale(float value) {
 
 void reverse(boolean value){
   process.reverse = value;
-  print(process.reverse);
 }
 
 void Pause(boolean value) {
@@ -169,7 +181,7 @@ void Pause(boolean value) {
     process.running = false;
   } else {
     pause.setLabel("Pause");
-    HashMap<Long, boolean[][]> steps = process.steps;
+    HashMap<Long, byte[][]> steps = process.steps;
     try {
       process.running = false;
       process.join();

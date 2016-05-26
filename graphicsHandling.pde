@@ -6,80 +6,42 @@ File folderPath;
 float scale = 1.0;
 float xOffset = 0;
 float yOffset = 0;
+HashMap<Byte, Integer> states;
 
-RenderThread renderer;
 
-public class RenderThread extends Thread {
-  PGraphics view = new PGraphics();
-  boolean rendering = true;
-
-  RenderThread(int w, int h) {
-    view = createGraphics(w, h);
-  }
-
-  void start() {
-
-    super.start();
-  }
-
-  void run() {
-    while (rendering) {
-      draw();
-    }
-    super.run();
-  }
-
-  void draw() {
-    drawGrid();
-    if(patternEditing){
-      drawEditorGrid();
-      
-    }
-  }
-
-  void drawEditorGrid() {
-    editor.view.beginDraw();
-    editor.view.background(0);
-    editor.view.stroke(0);
-    int cellSize = editor.view.width/editor.grid.length;
-    for (int i = 0; i<editor.grid.length; i++) {
-      for (int j = 0; j<editor.grid.length; j++) {
-         if(editor.grid[i][j]){
-           editor.view.fill(0, 255, 0);
-           editor.view.rect(i*(cellSize), j*(cellSize), cellSize, cellSize);
-         }
-      }
-    }
-    editor.view.endDraw();
-  }
-
-  void drawGrid() {
-    this.view.beginDraw();
-    this.view.background(0);
-    
-
-    int cellHeight = view.height/gridDensity, cellWidth = view.width/gridDensity;
-    
-    if(gridDensity <= 256){
-      this.view.stroke(0);
-    }else{
-      this.view.noStroke();
-    }
-    this.view.fill(0, 255, 0);
-    for (int i = 0; i<gridDensity; i++) {
-      for (int j = 0; j<gridDensity; j++) {
-        if (grid[i][j]) {
-          this.view.rect(i*cellWidth, j*cellHeight, cellWidth, cellHeight);
-        }
-      }
-    }
-
-    this.view.endDraw();
-    
-  }
+void initStates(){
+  states = new HashMap<Byte, Integer>();
+  states.put((byte)0, 0xff000000);
+  states.put((byte)1, 0xff00ff00);
 }
 
-PGraphics takeFrame(boolean[][] grid) {
+void drawGrid(){
+  if(states == null){
+    initStates();
+  }
+  AffineTransform transform = new AffineTransform();
+  transform.scale(scale, scale);
+  pushMatrix();
+  translate(xOffset, yOffset);
+  scale(scale);
+  background(states.get((byte)0));
+  Point2D cellSize = new Point2D.Float(gridHeight/gridDensity, gridWidth/gridDensity);
+  transform.transform(cellSize, cellSize);
+  
+  strokeWeight(0.25);
+  stroke(0);
+  for (int i = 0; i<gridDensity; i++) {
+    for (int j = 0; j<gridDensity; j++) {
+      fill(states.get(grid[i][j]));
+      if (grid[i][j] > 0) {
+        rect((float)(i*cellSize.getX()), (float)(j*cellSize.getY()), (float)(cellSize.getX()), (float)(cellSize.getY()));
+      }
+    }
+  }
+  popMatrix();
+}
+
+PGraphics takeFrame(byte[][] grid) {
   PGraphics screen = createGraphics(gridDensity*4, gridDensity*4);
   screen.beginDraw();
   background(0, 0);
@@ -88,7 +50,7 @@ PGraphics takeFrame(boolean[][] grid) {
   for (int i = 0; i<gridDensity; i++) {
     for (int j = 0; j<gridDensity; j++) {
 
-      if (grid[i][j]) {
+      if (grid[i][j] > 0) {
         screen.fill(0, 255, 0);
       } else {
         screen.fill(0);

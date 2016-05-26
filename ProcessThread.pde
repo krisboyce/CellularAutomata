@@ -1,5 +1,5 @@
 
-
+boolean barrier = false;
 long generation = 0;
 class Rules{
   boolean[] suff;
@@ -10,11 +10,14 @@ class Rules{
   }
   
 }
-Rules rules = new Rules();
+
+
+Rules rules;
+
 public class ProcessThread extends Thread {
   long delay = 0;
   boolean running = true;
-  HashMap<Long, boolean[][]> steps = new HashMap<Long, boolean[][]>();
+  HashMap<Long, byte[][]> steps = new HashMap<Long, byte[][]>();
   boolean reverse = false;
 
   
@@ -26,49 +29,64 @@ public class ProcessThread extends Thread {
   }
 
   public synchronized void step() {
-    boolean[][] gridBuffer = new boolean[gridDensity][gridDensity];
+    byte[][] gridBuffer = new byte[gridDensity][gridDensity];
     try {
       steps.put(generation, grid);
       for (int x = 0; x<gridDensity; x++) {
         for (int y = 0; y<gridDensity; y++) {
-          int neighbors = 0;
-          for (int i = -1; i<2; i++) {
-            for (int j = -1; j<2; j++) {
-              if (i == 0 && j == 0) {
-                continue;
+          int nCount = 0;
+          for(int i = -1; i < 2; i++){
+            for(int j = -1; j < 2; j++){
+              int nX = x+i, nY = y+j;
+              if(nX == x && nY == y){
+                  continue;
               }
-              int nX = 0; 
-              int nY = 0;
-              if (loop) {
-                nX = i+x < 0 ? gridDensity-1 : i+x > gridDensity-1 ? 0 : i+x;
-                nY = j+y < 0 ? gridDensity-1 : j+y > gridDensity-1 ? 0 : j+y;
-              } else {
-                nX = i+x;
-                nY = j+y;
+              if(!loop){
+                if(i<0 && x == 0){
+                  continue;
+                }
+                if(i>0 && x == gridDensity-1){
+                  continue;
+                }
+                if(j<0 && y == 0){
+                  continue;
+                }
+                if(j>0 && y == gridDensity-1){
+                  continue;
+                }
+                
+              }else{
+                
+                if(i<0 && x == 0){
+                  nX = gridDensity-1;
+                }
+                if(i>0 && x == gridDensity-1){
+                  nX = 0;
+                }
+                if(j<0 && y == 0){
+                  nY = gridDensity-1;
+                }
+                if(j>0 && y == gridDensity-1){
+                  nY = 0;
+                }
+                
               }
-              if (nX < 0 || nX > gridDensity-1) {
-                continue;
+              
+              if(grid[nX][nY] > 0){
+                nCount++;
               }
-              if (nY < 0 || nY > gridDensity-1) {
-                continue;
-              }
-              if (grid[nX][nY]) {
-                neighbors++;
-              }
+              
+              
             }
           }
-          if (!rules.suff[neighbors]) {
-            gridBuffer[x][y] = false;
-          } else if (rules.birth[neighbors]) {
-            gridBuffer[x][y] = true;
-          } else {
-            gridBuffer[x][y] = grid[x][y];
-          }
+          
+          
+          gridBuffer[x][y] = !rules.suff[nCount] ? 0 : (rules.birth[nCount] ? 1 : grid[x][y]);
         }
       }
       grid = gridBuffer;
-      if (steps.size() > 600) {
-        steps.remove(generation-600);
+      if (steps.size() > 1200) {
+        steps.remove(generation-1200);
       }
       generation++;
 

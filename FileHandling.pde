@@ -35,7 +35,7 @@ void loadConfig(File file) {
   JSONObject settings = configs.getJSONObject("settings");
   JSONObject rules = configs.getJSONObject("rules");
   gridDensity = settings.getInt("resolution");
-  grid = new boolean[gridDensity][gridDensity];
+  grid = new byte[gridDensity][gridDensity];
   scale = settings.getInt("Zoom");
   xOffset = settings.getInt("offsetX");
   yOffset = settings.getInt("offsetY");
@@ -122,12 +122,12 @@ void loadGol() {
     scale = params.getFloat("Zoom");
     xOffset = params.getFloat("offsetX");
     yOffset = params.getFloat("offsetY");
-    grid = new boolean[gridDensity][gridDensity];
+    grid = new byte[gridDensity][gridDensity];
 
     for (int x = 0; x<gridDensity; x++) {
       JSONArray row = data.getJSONArray(x);
       for (int y = 0; y<gridDensity; y++) {
-        grid[x][y] = boolean(row.getInt(y));
+        grid[x][y] = (byte)row.getInt(y);
       }
     }
     process.start();
@@ -162,14 +162,20 @@ void saveCurrentGol() {
 }
 
 void loadLastGol(File gol) {
-  JSONObject saveData = loadJSONObject(gol);
-  JSONArray data = saveData.getJSONArray("data");
-  for (int x = 0; x<gridDensity; x++) {
+
+  try{
+    JSONObject saveData = loadJSONObject(gol);
+    JSONArray data = saveData.getJSONArray("data");
+    for (int x = 0; x<gridDensity; x++) {
     JSONArray row = data.getJSONArray(x);
     for (int y = 0; y<gridDensity; y++) {
-      grid[x][y] = boolean(row.getInt(y));
+      grid[x][y] = (byte)row.getInt(y);
     }
   }
+  }catch(Exception e){
+    e.printStackTrace();
+  }
+
 }
 
 void saveImage() {
@@ -191,7 +197,7 @@ class FileThread extends Thread{
   String fileName;
   JSONObject jsonObj;
   PGraphics pg;
-  boolean[][] grid;
+  byte[][] grid;
   
   
   FileThread(File f, PGraphics g, String filename){
@@ -214,7 +220,7 @@ class FileThread extends Thread{
     this.jsonObj = j;
   }
   
-  FileThread(File f, boolean[][] grid, String filename){
+  FileThread(File f, byte[][] grid, String filename){
     this.file = f;
     this.fileName = filename;
     this.grid = grid;
