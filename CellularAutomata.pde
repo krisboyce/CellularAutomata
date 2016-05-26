@@ -6,6 +6,12 @@ import org.apache.commons.io.monitor.*;
 import org.apache.commons.io.output.*;
 
 import controlP5.*;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+
 import javax.swing.*;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.*;
@@ -13,25 +19,23 @@ import javax.swing.filechooser.FileFilter.*;
 
 import java.util.*;
 import java.util.Map.*;
+import java.lang.Math.*;
 
 ProcessThread process;
 void setup() {
-  size(1024, 768);
+  size(1920, 1024);
   init = new InitThread();
   init.start();
   background(0);
   textSize(25);
   text("Conway's Game of Life", width/2, height/2);
+  textSize(16);
   try {
     init.join();
   }
   catch(Exception e) {
   }
-  finally {
-    renderer = new RenderThread(gridDensity <= 128 ? gridDensity*16 : gridDensity * 4, gridDensity <= 128 ? gridDensity*16 : gridDensity * 4);
-    renderer.start();
-    print("Render Thread Running");
-  }
+  initStates();
 }
 void draw() {
   background(0);
@@ -54,15 +58,19 @@ void draw() {
       }
       if (keyCode == UP) {
         yOffset += 2*scale;
+        limitOffset();
       }
       if (keyCode == DOWN) {
         yOffset -= 2*scale;
+        limitOffset();
       }
       if (keyCode == LEFT) {
         xOffset -= 2*scale;
+        limitOffset();
       }
       if (keyCode == RIGHT) {
         xOffset += 2*scale;
+        limitOffset();
       }
       if (key == 'r') {
         ui.getController("reseed").update();
@@ -77,28 +85,44 @@ void draw() {
       scale = gridDensity/16;
     }
     
-    pushMatrix();
+    drawGrid();
+    Point2D mouse = new Point2D.Float(mouseX, mouseY);
+    AffineTransform mouseTx = new AffineTransform();
+    mouseTx.translate(xOffset, yOffset);
+    mouseTx.scale(scale, scale);
     
-    translate(xOffset, yOffset);
     
-    scale(scale);
     try{
-    image(renderer.view, 0, 0, gridWidth, gridHeight);
+      mouseTx = mouseTx.createInverse();
     }catch(Exception e){
+      e.printStackTrace();
     }
-    popMatrix();
+    
+    mouseTx.transform(mouse, mouse);
+    float tile = (gridWidth/gridDensity)*scale;
+    if(round((float)mouseX/tile-0.5)*tile < gridWidth && round((float)mouseY/tile-0.5)*tile < gridHeight){
+      fill(255, 255, 255, 128);
+      noStroke();
+      pushMatrix();
+      
+      translate(xOffset, yOffset);
+      scale(scale);
+      
+      
+      rect(round(((float)mouse.getX())/(tile)-0.5)*(tile), round(((float)mouse.getY())/tile-0.5)*tile, tile, tile);
+      popMatrix();
+    }
     fill(0);
     rect(gridWidth, 0, width, height);
-    fill(255, 128);
-    text("x"+(scale), 5, 20);
-  } else {
-    fill(24);
-    rect(0, 0, gridWidth, gridHeight);
-    image(editor.view, gridWidth/2-((gridHeight/3)), 0, (gridHeight/3)*2, (gridHeight/3)*2);
-    if(mousePressed){
-      placeEditorCell();
-    }
+    fill(64, 64);
+    rect(0, 0, gridWidth, 25);
+    fill(255);
+    text(String.format("X: %.2f - Y: %.2f Scale: x"+(scale), abs(xOffset)/(tile*scale), abs(yOffset)/(tile*scale)), 5, 20);
+    text("Grid Size: " + gridDensity, gridWidth-150, 20);
   }
+  
+
+  limitOffset();
 }
 
 void mouseDragged() {
@@ -108,6 +132,7 @@ void mouseDragged() {
 }
 
 void dispose() {
+  println("Shutting Down Simulation");
   saveCurrentGol();
   configs.getJSONObject("settings").setFloat("Zoom", scale);
   configs.getJSONObject("settings").setFloat("offsetX", xOffset);
@@ -126,10 +151,8 @@ void dispose() {
 }
 
 void mouseWheel(MouseEvent e) {
-  float val = e.getCount();
-  if (val < 0) {
-    zoom(true);
-  } else {
-    zoom(false);
+  if(mouseX < gridWidth){
+    zoom(e);
+    limitOffset();
   }
 }

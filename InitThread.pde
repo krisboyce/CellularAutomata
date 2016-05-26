@@ -7,8 +7,10 @@ class InitThread extends Thread {
     }catch(Exception e){
       
     }
-    gridWidth = round(width)-250;
+    gridWidth = width-(width-height);
     gridHeight = height;
+    rules = new Rules();
+    println(rules);
     initConfig();
     initBoard();
     gui();
