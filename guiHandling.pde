@@ -8,6 +8,10 @@ Slider birthMin;
 Toggle toggleLoop, reverse, record;
 Group patternEditor;
 CheckBox suffRules, birthRules;
+<<<<<<< Updated upstream
+=======
+boolean guiInit = false;
+>>>>>>> Stashed changes
 
 void gui() {
   int guiWidth = width-gridWidth;
@@ -36,8 +40,13 @@ void gui() {
   ui.addButton("Step").setLabel(">").setPosition(190, 30).setSize(25, 40).setGroup(time).setVisible(true);
   ui.addButton("StepBack").setLabel("<").setPosition(140, 30).setSize(25, 40).setGroup(time).setVisible(true);
   
+<<<<<<< Updated upstream
   Group rules = ui.addGroup("rules").setBackgroundColor(color(255, 128, 0, 10));
   ui.addLabel("Suffocation Rules (0...8 neighbors)").setPosition(10, 25).setGroup(rules);
+=======
+  Group ruleSettings = ui.addGroup("rules").setBackgroundColor(color(255, 128, 0, 10));
+  ui.addLabel("Suffocation Rules (0...8 neighbors)").setPosition(10, 25).setGroup(ruleSettings);
+>>>>>>> Stashed changes
   suffRules = ui.addCheckBox("suffRules").setPosition(10, 40).setItemsPerRow(9).setSize(45, 25).setSpacingColumn(30)
     .addItem("s0", 0)
     .addItem("s1", 1)
@@ -49,6 +58,7 @@ void gui() {
     .addItem("s7", 7)
     .addItem("s8", 8)
     .hideLabels()
+<<<<<<< Updated upstream
     .setGroup(rules);
   
 //  for(int i = 0; i<rules.suff.length; i++){
@@ -58,6 +68,17 @@ void gui() {
 //  }
   
   ui.addLabel("Birth Rules (0...8 neighbors)").setPosition(10, 75).setGroup(rules);
+=======
+    .setGroup(ruleSettings);
+  
+  for(int i = 0; i<rules.suff.length; i++){
+    if(rules.suff[i]){
+      suffRules.activate(i);
+    }
+  }
+  
+  ui.addLabel("Birth Rules (0...8 neighbors)").setPosition(10, 75).setGroup(ruleSettings);
+>>>>>>> Stashed changes
   birthRules = ui.addCheckBox("birthRules").setPosition(10, 90).setItemsPerRow(9).setSize(45, 25).setSpacingColumn(30)
     .addItem("b0", 0)
     .addItem("b1", 1)
@@ -69,6 +90,7 @@ void gui() {
     .addItem("b7", 7)
     .addItem("b8", 8)
     .hideLabels()
+<<<<<<< Updated upstream
     .setGroup(rules);
   
 //  for(int i = 0; i<rules.birth.length; i++){
@@ -76,6 +98,15 @@ void gui() {
 //      birthRules.activate(i);
 //    }
 //  }
+=======
+    .setGroup(ruleSettings);
+  
+  for(int i = 0; i<rules.birth.length; i++){
+    if(rules.birth[i]){
+      birthRules.activate(i);
+    }
+  }
+>>>>>>> Stashed changes
   
   Group options = ui.addGroup("options").setBackgroundColor(color(255, 128, 0, 10));
   ui.addButton("save")
@@ -109,7 +140,11 @@ void gui() {
   menu = ui.addAccordion("menu")
     .setPosition(gridWidth, 0).setWidth(width-gridWidth)
     .setMinItemHeight((height-40)/4).addItem(board)
+<<<<<<< Updated upstream
     .addItem(time).addItem(rules).addItem(options)
+=======
+    .addItem(time).addItem(ruleSettings).addItem(options)
+>>>>>>> Stashed changes
     .setCollapseMode(Accordion.MULTI);
     
   menu.open(0, 1, 2);
@@ -117,6 +152,7 @@ void gui() {
   ui.getController("seedProb").setValue(tempSeedProb);
   
   patternEditor = ui.addGroup("patternEditor").setPosition(0, gridHeight-gridHeight/3).setSize(gridWidth, gridHeight/3).disableCollapse().setBackgroundColor(color(8)).setVisible(false);
+<<<<<<< Updated upstream
 
 }
 
@@ -129,6 +165,22 @@ void controlEvent(ControlEvent e){
   if(e.isFrom(birthRules)){
     for(int i = 0; i<9; i++){
       rules.birth[i] = birthRules.getArrayValue()[i] > 0;
+=======
+  guiInit = true;
+}
+
+void controlEvent(ControlEvent e){
+  if(e.isFrom(suffRules) && guiInit){
+    for(int i = 0; i<9; i++){
+      rules.suff[i] = suffRules.getArrayValue()[i] > 0;
+      configs.getJSONObject("rules").getJSONArray("suffocate").setInt(i, (int)suffRules.getArrayValue()[i]);
+    }
+  }
+  if(e.isFrom(birthRules) && guiInit){
+    for(int i = 0; i<9; i++){
+      rules.birth[i] = birthRules.getArrayValue()[i] > 0;
+      configs.getJSONObject("rules").getJSONArray("birth").setInt(i, (int)birthRules.getArrayValue()[i]);
+>>>>>>> Stashed changes
     }
   }
   

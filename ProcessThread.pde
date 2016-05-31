@@ -12,7 +12,11 @@ class Rules{
 }
 
 
+<<<<<<< Updated upstream
 Rules rules;
+=======
+Rules rules = new Rules();
+>>>>>>> Stashed changes
 
 public class ProcessThread extends Thread {
   long delay = 0;
