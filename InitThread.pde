@@ -10,10 +10,6 @@ class InitThread extends Thread {
     gridWidth = width-(width-height);
     gridHeight = height;
     rules = new Rules();
-<<<<<<< Updated upstream
-    println(rules);
-=======
->>>>>>> Stashed changes
     initConfig();
     initBoard();
     gui();

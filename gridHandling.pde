@@ -37,7 +37,7 @@ void seedBoard() {
   for (int i = 0; i<gridDensity; i++) {
     for (int j = 0; j<gridDensity; j++) {
       if (random(100) < seedProb) {
-        grid[i][j] = (byte)random(1, 1);
+        grid[i][j] = maxState;
       } else {
         grid[i][j] = 0;
       }
