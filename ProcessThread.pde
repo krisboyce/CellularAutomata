@@ -11,12 +11,9 @@ class Rules{
   
 }
 
-
-<<<<<<< Updated upstream
 Rules rules;
-=======
-Rules rules = new Rules();
->>>>>>> Stashed changes
+
+byte maxState;
 
 public class ProcessThread extends Thread {
   long delay = 0;
@@ -76,7 +73,7 @@ public class ProcessThread extends Thread {
                 
               }
               
-              if(grid[nX][nY] > 0){
+              if(grid[nX][nY] == maxState){
                 nCount++;
               }
               
@@ -85,7 +82,7 @@ public class ProcessThread extends Thread {
           }
           
           
-          gridBuffer[x][y] = !rules.suff[nCount] ? 0 : (rules.birth[nCount] ? 1 : grid[x][y]);
+          gridBuffer[x][y] = !rules.suff[nCount] ? byte(max(grid[x][y]-1, 0)) : (rules.birth[nCount] ? maxState : grid[x][y] < maxState ? byte(max(grid[x][y]-1, 0)) : grid[x][y]);
         }
       }
       grid = gridBuffer;
@@ -128,7 +125,7 @@ public class ProcessThread extends Thread {
       }
     }
     
-    if (generation > minEntry) {
+    if (minEntry != null && generation > minEntry) {
       if (steps.get(generation) != null) {
         grid = steps.get(generation-1);
       }

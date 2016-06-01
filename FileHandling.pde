@@ -19,13 +19,6 @@ void initConfig() {
     settings.setFloat("timeScale", timeScale);
     settings.setBoolean("paused", paused);
     settings.setBoolean("loop", loop);
-<<<<<<< Updated upstream
-    rules.setInt("neighborMin", neighborMin);
-    rules.setInt("neighborMax", neighborMax);
-    rules.setInt("neighborBirth", neighborBirth);
-    configs.setJSONObject("settings", settings);
-    configs.setJSONObject("rules", rules);
-=======
     configs.setJSONObject("settings", settings);
     configs.setJSONObject("rules", rules);
     
@@ -40,12 +33,11 @@ void initConfig() {
     suffocate.setInt(2, 1);
     suffocate.setInt(3, 1);
     
-    birth.setInt(2, 1);
+    birth.setInt(3, 1);
     
     rules.setJSONArray("suffocate", suffocate);
     rules.setJSONArray("birth", birth);
     
->>>>>>> Stashed changes
     saveConfig(configs);
   } else {
     loadConfig(configFile);
@@ -55,22 +47,13 @@ void initConfig() {
 void loadConfig(File file) {
   configs = loadJSONObject(file);
   JSONObject settings = configs.getJSONObject("settings");
-<<<<<<< Updated upstream
-  JSONObject rules = configs.getJSONObject("rules");
-=======
   JSONObject rulesConfig = configs.getJSONObject("rules");
->>>>>>> Stashed changes
   gridDensity = settings.getInt("resolution");
   grid = new byte[gridDensity][gridDensity];
   scale = settings.getInt("Zoom");
   xOffset = settings.getInt("offsetX");
   yOffset = settings.getInt("offsetY");
   seedProb = settings.getFloat("seedProb");
-<<<<<<< Updated upstream
-  neighborMin = rules.getInt("neighborMin");
-  neighborMax = rules.getInt("neighborMax");
-  neighborBirth = rules.getInt("neighborBirth");
-=======
   JSONArray suffRules = rulesConfig.getJSONArray("suffocate");
   JSONArray birthRules = rulesConfig.getJSONArray("birth");
   
@@ -79,7 +62,6 @@ void loadConfig(File file) {
     rules.birth[i] = birthRules.getInt(i) > 0;
   }
 
->>>>>>> Stashed changes
   timeScale = settings.getFloat("timeScale");
   paused = settings.getBoolean("paused");
   loop = settings.getBoolean("loop");
@@ -271,7 +253,7 @@ class FileThread extends Thread{
     this.jsonObj  = j;
   }
   
-  void run(){
+  public void run(){
     
     if(jsonObj != null){
       saveJSON();

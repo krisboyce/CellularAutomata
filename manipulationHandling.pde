@@ -95,7 +95,7 @@ void placeCells() {
   int mY = (int)(Math.round((mouse.getY()/tileSize-0.5))*tileSize/tileSize);
   if (mX >= 0 && mY >= 0) {
     if (mX < grid.length && mY < grid[0].length) {
-      grid[mX][mY] = mouseButton == LEFT ? (byte)1 : (byte)0;
+      grid[mX][mY] = mouseButton == LEFT ? maxState : (byte)0;
       process.steps.put(generation, grid);
       if (frameNum > 0 && recording) {
         frameNum++;

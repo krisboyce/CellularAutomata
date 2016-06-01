@@ -8,11 +8,16 @@ float xOffset = 0;
 float yOffset = 0;
 HashMap<Byte, Integer> states;
 
+int[] stateColors = new int[]{
+  #000000, #006600, #007700, #008800, #009900, #00aa00, #00bb00, #00cc00, #00dd00, #00ee00, #00ff00
+};
 
 void initStates(){
+  maxState = (byte)(stateColors.length-1);
   states = new HashMap<Byte, Integer>();
-  states.put((byte)0, 0xff000000);
-  states.put((byte)1, 0xff00ff00);
+  for(byte i = 0; i<stateColors.length; i++){
+    states.put(i, stateColors[i]);
+  }
 }
 
 void drawGrid(){
@@ -32,7 +37,11 @@ void drawGrid(){
   stroke(0);
   for (int i = 0; i<gridDensity; i++) {
     for (int j = 0; j<gridDensity; j++) {
+      try{
       fill(states.get(grid[i][j]));
+      }catch(Exception e){
+        // //<>//
+      }
       if (grid[i][j] > 0) {
         rect((float)(i*cellSize.getX()), (float)(j*cellSize.getY()), (float)(cellSize.getX()), (float)(cellSize.getY()));
       }
